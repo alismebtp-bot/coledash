@@ -1,100 +1,143 @@
-import { useState } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
   Store,
-  MapPin,
-  DollarSign,
+  ShoppingBag,
+  CreditCard,
+  Megaphone,
+  Headphones,
   Settings,
   LogOut,
   Menu,
   X,
-  Megaphone,
-  ClipboardList,
-  HeadphonesIcon,
-  AlertTriangle
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { cn } from '@/lib/utils'
+} from "lucide-react";
+import { useState } from "react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const navItems = [
-  { label: 'Overview', icon: LayoutDashboard, href: '/admin' },
-  { label: 'Users', icon: Users, href: '/admin/users' },
-  { label: 'Restaurants', icon: Store, href: '/admin/restaurants' },
-  { label: 'Cities', icon: MapPin, href: '/admin/cities' },
-  { label: 'Orders', icon: ClipboardList, href: '/admin/orders' },
-  { label: 'Finance', icon: DollarSign, href: '/admin/finance' },
-  { label: 'Marketing', icon: Megaphone, href: '/admin/marketing' },
-  { label: 'Support', icon: HeadphonesIcon, href: '/admin/support' },
-  { label: 'Error Logs', icon: AlertTriangle, href: '/admin/error-logs' },
-  { label: 'Settings', icon: Settings, href: '/admin/settings' },
-]
+  { label: "Tableau de bord", href: "/admin", icon: LayoutDashboard },
+  { label: "Utilisateurs", href: "/admin/users", icon: Users },
+  { label: "Restaurants", href: "/admin/restaurants", icon: Store },
+  { label: "Commandes", href: "/admin/orders", icon: ShoppingBag },
+  { label: "Finances", href: "/admin/finance", icon: CreditCard },
+  { label: "Marketing", href: "/admin/marketing", icon: Megaphone },
+  { label: "Support", href: "/admin/support", icon: Headphones },
+  { label: "Paramètres", href: "/admin/settings", icon: Settings },
+];
 
 export default function AdminLayout() {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const location = useLocation()
+  const { pathname } = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const SidebarContent = () => (
-    <>
-      <div className="flex items-center gap-2 px-4 py-6">
-        <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground font-bold text-sm">CD</span>
+  return (
+    <div className="flex min-h-screen bg-slate-50">
+      {/* Desktop sidebar */}
+      <aside className="hidden w-64 flex-col border-r bg-white md:flex">
+        <div className="flex h-16 items-center gap-2 border-b px-6">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold">
+            C
+          </div>
+          <span className="text-lg font-bold text-slate-800">ColeDash</span>
         </div>
-        <span className="font-semibold text-lg">Admin</span>
-      </div>
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              onClick={() => setMobileOpen(false)}
-            >
-              <Button
-                variant={location.pathname === item.href ? 'secondary' : 'ghost'}
-                className={cn('w-full justify-start gap-2', location.pathname === item.href && 'bg-secondary')}
+        <nav className="flex-1 space-y-1 p-4">
+          {navItems.map((item) => {
+            const isActive =
+              item.href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                )}
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}
-              </Button>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="border-t p-4">
+          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+            <LogOut className="h-4 w-4" />
+            Déconnexion
+          </button>
         </div>
-      </ScrollArea>
-      <div className="p-3 border-t">
-        <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-          <LogOut className="h-4 w-4" />
-          Sign Out
-        </Button>
-      </div>
-    </>
-  )
-
-  return (
-    <div className="min-h-screen flex">
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col border-r bg-card">
-        <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar */}
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="lg:hidden absolute top-4 left-4 z-50">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0 flex flex-col">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
+      {/* Mobile header */}
+      <div className="flex flex-1 flex-col">
+        <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:hidden">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold">
+              C
+            </div>
+            <span className="text-lg font-bold text-slate-800">ColeDash</span>
+          </div>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="rounded-lg p-2 hover:bg-slate-100"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </header>
 
-      <main className="flex-1 overflow-auto">
-        <Outlet />
-      </main>
+        {/* Mobile sidebar overlay */}
+        {mobileOpen && (
+          <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setMobileOpen(false)}>
+            <div
+              className="absolute left-0 top-0 h-full w-64 bg-white shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex h-16 items-center justify-between border-b px-4">
+                <span className="text-lg font-bold text-slate-800">Menu</span>
+                <button onClick={() => setMobileOpen(false)} className="rounded-lg p-2 hover:bg-slate-100">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="space-y-1 p-4">
+                {navItems.map((item) => {
+                  const isActive =
+                    item.href === "/admin"
+                      ? pathname === "/admin"
+                      : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        isActive
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
+        )}
+
+        <main className="flex-1 p-4 md:p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
-  )
+  );
 }
