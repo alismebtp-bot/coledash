@@ -1,38 +1,41 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, ReactNode } from 'react'
 
-interface City {
-  id: string;
-  name: string;
-  region: string;
+export interface City {
+  id: string
+  name: string
+  country: string
 }
+
+const cities: City[] = [
+  { id: 'paris', name: 'Paris', country: 'France' },
+  { id: 'london', name: 'London', country: 'UK' },
+  { id: 'berlin', name: 'Berlin', country: 'Germany' },
+  { id: 'madrid', name: 'Madrid', country: 'Spain' },
+  { id: 'rome', name: 'Rome', country: 'Italy' },
+]
 
 interface CityContextType {
-  city: City | null;
-  setCity: (city: City | null) => void;
+  currentCity: City
+  setCurrentCity: (city: City) => void
+  cities: City[]
 }
 
-const CityContext = createContext<CityContextType | undefined>(undefined);
+const CityContext = createContext<CityContextType | undefined>(undefined)
 
-const defaultCity: City = {
-  id: "paris",
-  name: "Paris",
-  region: "Île-de-France",
-};
-
-export function CityProvider({ children }: { children: React.ReactNode }) {
-  const [city, setCity] = useState<City | null>(defaultCity);
+export function CityProvider({ children }: { children: ReactNode }) {
+  const [currentCity, setCurrentCity] = useState<City>(cities[0])
 
   return (
-    <CityContext.Provider value={{ city, setCity }}>
+    <CityContext.Provider value={{ currentCity, setCurrentCity, cities }}>
       {children}
     </CityContext.Provider>
-  );
+  )
 }
 
 export function useCity() {
-  const context = useContext(CityContext);
-  if (!context) {
-    throw new Error("useCity must be used within a CityProvider");
-  }
-  return context;
+  const context = useContext(CityContext)
+  if (!context) throw new Error('useCity must be used within CityProvider')
+  return context
 }
+
+export { cities }

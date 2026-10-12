@@ -1,126 +1,73 @@
-import { Link } from "react-router-dom";
-import { Flower2, ShoppingCart, User, Menu, X } from "lucide-react";
-import { useState } from "react";
-import CitySelector from "./CitySelector";
-import { useCart } from "../context/CartContext";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { Link } from 'react-router-dom'
+import { ShoppingCart, Menu, X, Store, Truck, Flower2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useState } from 'react'
+import CitySelector from './CitySelector'
+import { useCart } from '@/context/CartContext'
 
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { items } = useCart();
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const [open, setOpen] = useState(false)
+  const { itemCount } = useCart()
+
+  const navLinks = [
+    { label: 'Restaurants', href: '/restaurants', icon: Store },
+    { label: 'Grocery', href: '/grocery', icon: Store },
+    { label: 'Flowers', href: '/flowers', icon: Flower2 },
+    { label: 'Retail', href: '/retail', icon: Store },
+  ]
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
-              <Flower2 className="h-5 w-5" />
-            </div>
-            <span className="text-lg font-bold text-slate-800 hidden sm:inline">ColeDash</span>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <div className="mr-4 flex">
+          <Link to="/" className="mr-6 flex items-center space-x-2">
+            <span className="font-bold text-xl">ColeDash</span>
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
-            <Link
-              to="/restaurants"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              Restaurants
-            </Link>
-            <Link
-              to="/epicerie"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              Épicerie
-            </Link>
-            <Link
-              to="/fleurs"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              Fleurs
-            </Link>
-            <Link
-              to="/boutiques"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              Boutiques
-            </Link>
-          </nav>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden md:block">
-            <CitySelector />
-          </div>
-          <Link
-            to="/panier"
-            className="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {totalItems > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                {totalItems}
-              </span>
-            )}
+        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+          {navLinks.map((link) => (
+            <Link key={link.href} to={link.href} className="transition-colors hover:text-foreground/80">
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <CitySelector />
+          <Link to="/cart">
+            <Button variant="ghost" size="icon" className="relative">
+              <ShoppingCart className="h-5 w-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Button>
           </Link>
-          <Link
-            to="/compte"
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
-          >
-            <User className="h-5 w-5" />
-          </Link>
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 md:hidden"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <div className="flex flex-col gap-4 mt-8">
+                {navLinks.map((link) => (
+                  <Link key={link.href} to={link.href} onClick={() => setOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <link.icon className="h-4 w-4 mr-2" />
+                      {link.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="border-t bg-white md:hidden">
-          <div className="space-y-1 px-4 py-3">
-            <Link
-              to="/restaurants"
-              onClick={() => setMobileOpen(false)}
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-            >
-              Restaurants
-            </Link>
-            <Link
-              to="/epicerie"
-              onClick={() => setMobileOpen(false)}
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-            >
-              Épicerie
-            </Link>
-            <Link
-              to="/fleurs"
-              onClick={() => setMobileOpen(false)}
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-            >
-              Fleurs
-            </Link>
-            <Link
-              to="/boutiques"
-              onClick={() => setMobileOpen(false)}
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-            >
-              Boutiques
-            </Link>
-            <div className="pt-2">
-              <CitySelector />
-            </div>
-          </div>
-        </div>
-      )}
     </header>
-  );
+  )
 }

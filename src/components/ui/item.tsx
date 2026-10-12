@@ -1,44 +1,70 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-interface ItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  title: string
-  description?: string
-  icon?: React.ReactNode
-  action?: React.ReactNode
-  active?: boolean
+function Item({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="item"
+      className={cn(
+        "flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-const Item = React.forwardRef<HTMLDivElement, ItemProps>(
-  ({ className, title, description, icon, action, active, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "flex items-center gap-3 rounded-lg border p-3 transition-colors",
-          active
-            ? "border-emerald-200 bg-emerald-50"
-            : "border-slate-200 bg-white hover:border-slate-300",
-          className
-        )}
-        {...props}
-      >
-        {icon && (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-            {icon}
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-800 truncate">{title}</p>
-          {description && (
-            <p className="text-xs text-slate-500 truncate">{description}</p>
-          )}
-        </div>
-        {action && <div className="shrink-0">{action}</div>}
-      </div>
-    )
-  }
-)
-Item.displayName = "Item"
+function ItemMedia({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="item-media"
+      className={cn(
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-md",
+        className
+      )}
+      {...props}
+    />
+  )
+}
 
-export { Item }
+function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="item-content"
+      className={cn("flex min-w-0 flex-1 flex-col gap-0.5", className)}
+      {...props}
+    />
+  )
+}
+
+function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="item-title"
+      className={cn("font-medium leading-tight", className)}
+      {...props}
+    />
+  )
+}
+
+function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <p
+      data-slot="item-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function ItemAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="item-action"
+      className={cn("flex shrink-0 items-center", className)}
+      {...props}
+    />
+  )
+}
+
+export { Item, ItemMedia, ItemContent, ItemTitle, ItemDescription, ItemAction }
