@@ -1,20 +1,22 @@
-import { useState } from "react";
-import { ImageIcon } from "lucide-react";
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
 
 interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  fallback?: React.ReactNode;
+  fallback?: string
 }
 
-export default function SafeImage({ fallback, ...props }: SafeImageProps) {
-  const [error, setError] = useState(false);
+export default function SafeImage({ className, fallback, ...props }: SafeImageProps) {
+  const [error, setError] = useState(false)
 
-  if (error) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400">
-        {fallback ?? <ImageIcon className="h-8 w-8" />}
-      </div>
-    );
+  if (error && fallback) {
+    return <img className={cn(className)} src={fallback} {...props} />
   }
 
-  return <img {...props} onError={() => setError(true)} />;
+  return (
+    <img
+      className={cn(className)}
+      {...props}
+      onError={() => setError(true)}
+    />
+  )
 }
