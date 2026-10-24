@@ -1,138 +1,125 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { CartProvider } from './context/CartContext'
-import { CityProvider } from './context/CityContext'
-import { NotificationProvider } from './context/NotificationContext'
-import { LanguageProvider } from './i18n/LanguageContext'
-import ScrollToTop from './components/ScrollToTop'
-import DebugTrigger from './components/DebugTrigger'
-import ErrorBoundary from './components/ErrorBoundary'
-import { PortalLoader } from './components/SkeletonLoader'
+import { lazy } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import SiteLayout from '@/components/site/SiteLayout'
+import ScrollToTop from '@/components/shared/ScrollToTop'
+import ErrorBoundary from '@/components/shared/ErrorBoundary'
+import { MerchantLayout, DriverLayout, AdminLayout } from '@/components/portal/portals'
+import Home from '@/pages/site/Home'
 
-// Layouts — always loaded
-import Layout from './components/Layout'
-import MerchantLayout from './components/MerchantLayout'
-import DriverLayout from './components/DriverLayout'
-import AdminLayout from './components/AdminLayout'
+const page = <T,>(load: () => Promise<{ default: T }>) => lazy(load as () => Promise<{ default: React.ComponentType }>)
 
-// Eager-loaded: core customer pages
-import Home from './pages/Home'
-import BrowseRestaurants from './pages/BrowseRestaurants'
-import Cart from './pages/Cart'
-import Checkout from './pages/Checkout'
+// Site client
+const Restaurants = page(() => import('@/pages/site/Restaurants'))
+const RestaurantDetail = page(() => import('@/pages/site/RestaurantDetail'))
+const Search = page(() => import('@/pages/site/Search'))
+const Grocery = page(() => import('@/pages/site/Grocery'))
+const Retail = page(() => import('@/pages/site/Retail'))
+const StoreDetail = page(() => import('@/pages/site/StoreDetail'))
+const Flowers = page(() => import('@/pages/site/Flowers'))
+const BouquetBuilder = page(() => import('@/pages/site/BouquetBuilder'))
+const Cart = page(() => import('@/pages/site/Cart'))
+const Checkout = page(() => import('@/pages/site/Checkout'))
+const OrderTracking = page(() => import('@/pages/site/OrderTracking'))
+const Orders = page(() => import('@/pages/site/Orders'))
+const Account = page(() => import('@/pages/site/Account'))
+const Login = page(() => import('@/pages/site/Login'))
+const Signup = page(() => import('@/pages/site/Signup'))
+const Partners = page(() => import('@/pages/site/Partners'))
+const Help = page(() => import('@/pages/site/Help'))
+const NotFound = page(() => import('@/pages/site/NotFound'))
 
-// Lazy-loaded: secondary pages
-const BrowseGrocery = lazy(() => import('./pages/BrowseGrocery'))
-const BrowseRetail = lazy(() => import('./pages/BrowseRetail'))
-const BrowseFlowers = lazy(() => import('./pages/BrowseFlowers'))
-const BouquetBuilder = lazy(() => import('./pages/BouquetBuilder'))
-const BouquetCheckout = lazy(() => import('./pages/BouquetCheckout'))
-const RestaurantDetail = lazy(() => import('./pages/RestaurantDetail'))
-const StoreDetail = lazy(() => import('./pages/StoreDetail'))
-const OrderTracking = lazy(() => import('./pages/OrderTracking'))
-const OrdersHistory = lazy(() => import('./pages/OrdersHistory'))
-const Account = lazy(() => import('./pages/Account'))
+// Espace commerçant
+const MerchantDashboard = page(() => import('@/pages/merchant/MerchantDashboard'))
+const MerchantOrders = page(() => import('@/pages/merchant/MerchantOrders'))
+const MerchantMenu = page(() => import('@/pages/merchant/MerchantMenu'))
+const MerchantAnalytics = page(() => import('@/pages/merchant/MerchantAnalytics'))
+const MerchantReviews = page(() => import('@/pages/merchant/MerchantReviews'))
+const MerchantPromotions = page(() => import('@/pages/merchant/MerchantPromotions'))
+const MerchantPayouts = page(() => import('@/pages/merchant/MerchantPayouts'))
+const MerchantSettings = page(() => import('@/pages/merchant/MerchantSettings'))
 
-// Merchant
-const MerchantDashboard = lazy(() => import('./pages/merchant/MerchantDashboard'))
-const MerchantOrders = lazy(() => import('./pages/merchant/MerchantOrders'))
-const MerchantMenu = lazy(() => import('./pages/merchant/MerchantMenu'))
-const MerchantAnalytics = lazy(() => import('./pages/merchant/MerchantAnalytics'))
-const MerchantSettings = lazy(() => import('./pages/merchant/MerchantSettings'))
-const MerchantReviews = lazy(() => import('./pages/merchant/MerchantReviews'))
-const MerchantPayouts = lazy(() => import('./pages/merchant/MerchantPayouts'))
-const MerchantPromotions = lazy(() => import('./pages/merchant/MerchantPromotions'))
-const AIScanner = lazy(() => import('./pages/merchant/AIScanner'))
-const DebugEngineer = lazy(() => import('./pages/merchant/DebugEngineer'))
+// Espace livreur
+const DriverDashboard = page(() => import('@/pages/driver/DriverDashboard'))
+const DriverOrders = page(() => import('@/pages/driver/DriverOrders'))
+const DriverDelivery = page(() => import('@/pages/driver/DriverDelivery'))
+const DriverEarnings = page(() => import('@/pages/driver/DriverEarnings'))
+const DriverSchedule = page(() => import('@/pages/driver/DriverSchedule'))
+const DriverProfile = page(() => import('@/pages/driver/DriverProfile'))
 
-// Driver
-const DriverDashboard = lazy(() => import('./pages/driver/DriverDashboard'))
-const DriverOrders = lazy(() => import('./pages/driver/DriverOrders'))
-const DriverDelivery = lazy(() => import('./pages/driver/DriverDelivery'))
-const DriverEarnings = lazy(() => import('./pages/driver/DriverEarnings'))
-const DriverSchedule = lazy(() => import('./pages/driver/DriverSchedule'))
-const DriverProfile = lazy(() => import('./pages/driver/DriverProfile'))
-
-// Admin
-const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'))
-const AdminProspecting = lazy(() => import('./pages/admin/AdminProspecting'))
-const AdminCities = lazy(() => import('./pages/admin/AdminCities'))
-const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
-const AdminRestaurants = lazy(() => import('./pages/admin/AdminRestaurants'))
-const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'))
-const AdminFinance = lazy(() => import('./pages/admin/AdminFinance'))
-const AdminMarketing = lazy(() => import('./pages/admin/AdminMarketing'))
-const AdminSupport = lazy(() => import('./pages/admin/AdminSupport'))
-const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
-const ErrorLogViewer = lazy(() => import('./pages/admin/ErrorLogViewer'))
+// Administration
+const AdminOverview = page(() => import('@/pages/admin/AdminOverview'))
+const AdminOrders = page(() => import('@/pages/admin/AdminOrders'))
+const AdminRestaurants = page(() => import('@/pages/admin/AdminRestaurants'))
+const AdminUsers = page(() => import('@/pages/admin/AdminUsers'))
+const AdminCities = page(() => import('@/pages/admin/AdminCities'))
+const AdminFinance = page(() => import('@/pages/admin/AdminFinance'))
+const AdminMarketing = page(() => import('@/pages/admin/AdminMarketing'))
+const AdminProspecting = page(() => import('@/pages/admin/AdminProspecting'))
+const AdminSupport = page(() => import('@/pages/admin/AdminSupport'))
+const AdminSettings = page(() => import('@/pages/admin/AdminSettings'))
 
 export default function App() {
   return (
-    <LanguageProvider>
-    <CityProvider>
-    <NotificationProvider>
-      <CartProvider>
-        <ScrollToTop />
-        <ErrorBoundary>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/browse" element={<BrowseRestaurants />} />
-            <Route path="/grocery" element={<Suspense fallback={<PortalLoader />}><BrowseGrocery /></Suspense>} />
-            <Route path="/retail" element={<Suspense fallback={<PortalLoader />}><BrowseRetail /></Suspense>} />
-            <Route path="/flowers" element={<Suspense fallback={<PortalLoader />}><BrowseFlowers /></Suspense>} />
-            <Route path="/create-bouquet" element={<Suspense fallback={<PortalLoader />}><BouquetBuilder /></Suspense>} />
-            <Route path="/create-bouquet/checkout" element={<Suspense fallback={<PortalLoader />}><BouquetCheckout /></Suspense>} />
-            <Route path="/restaurant/:id" element={<Suspense fallback={<PortalLoader />}><RestaurantDetail /></Suspense>} />
-            <Route path="/store/:id" element={<Suspense fallback={<PortalLoader />}><StoreDetail /></Suspense>} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/track/:id" element={<Suspense fallback={<PortalLoader />}><OrderTracking /></Suspense>} />
-            <Route path="/orders" element={<Suspense fallback={<PortalLoader />}><OrdersHistory /></Suspense>} />
-            <Route path="/account" element={<Suspense fallback={<PortalLoader />}><Account /></Suspense>} />
-          </Route>
+    <ErrorBoundary>
+      <ScrollToTop />
+      <Routes>
+        <Route element={<SiteLayout />}>
+          <Route index element={<Home />} />
+          <Route path="restaurants" element={<Restaurants />} />
+          <Route path="restaurants/:id" element={<RestaurantDetail />} />
+          <Route path="recherche" element={<Search />} />
+          <Route path="courses" element={<Grocery />} />
+          <Route path="courses/:id" element={<StoreDetail />} />
+          <Route path="boutiques" element={<Retail />} />
+          <Route path="boutiques/:id" element={<StoreDetail />} />
+          <Route path="fleurs" element={<Flowers />} />
+          <Route path="fleurs/atelier" element={<BouquetBuilder />} />
+          <Route path="fleurs/:id" element={<StoreDetail />} />
+          <Route path="panier" element={<Cart />} />
+          <Route path="commande" element={<Checkout />} />
+          <Route path="suivi/:id" element={<OrderTracking />} />
+          <Route path="commandes" element={<Orders />} />
+          <Route path="compte" element={<Account />} />
+          <Route path="connexion" element={<Login />} />
+          <Route path="inscription" element={<Signup />} />
+          <Route path="partenaires" element={<Partners />} />
+          <Route path="aide" element={<Help />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
 
-          <Route element={<MerchantLayout />}>
-            <Route path="/merchant" element={<Suspense fallback={<PortalLoader />}><MerchantDashboard /></Suspense>} />
-            <Route path="/merchant/orders" element={<Suspense fallback={<PortalLoader />}><MerchantOrders /></Suspense>} />
-            <Route path="/merchant/menu" element={<Suspense fallback={<PortalLoader />}><MerchantMenu /></Suspense>} />
-            <Route path="/merchant/analytics" element={<Suspense fallback={<PortalLoader />}><MerchantAnalytics /></Suspense>} />
-            <Route path="/merchant/settings" element={<Suspense fallback={<PortalLoader />}><MerchantSettings /></Suspense>} />
-            <Route path="/merchant/reviews" element={<Suspense fallback={<PortalLoader />}><MerchantReviews /></Suspense>} />
-            <Route path="/merchant/payouts" element={<Suspense fallback={<PortalLoader />}><MerchantPayouts /></Suspense>} />
-            <Route path="/merchant/promotions" element={<Suspense fallback={<PortalLoader />}><MerchantPromotions /></Suspense>} />
-            <Route path="/merchant/ai-scanner" element={<Suspense fallback={<PortalLoader />}><AIScanner /></Suspense>} />
-            <Route path="/merchant/debug-engineer" element={<Suspense fallback={<PortalLoader />}><DebugEngineer /></Suspense>} />
-          </Route>
+        <Route path="marchand" element={<MerchantLayout />}>
+          <Route index element={<MerchantDashboard />} />
+          <Route path="commandes" element={<MerchantOrders />} />
+          <Route path="carte" element={<MerchantMenu />} />
+          <Route path="statistiques" element={<MerchantAnalytics />} />
+          <Route path="avis" element={<MerchantReviews />} />
+          <Route path="promotions" element={<MerchantPromotions />} />
+          <Route path="paiements" element={<MerchantPayouts />} />
+          <Route path="parametres" element={<MerchantSettings />} />
+        </Route>
 
-          <Route element={<DriverLayout />}>
-            <Route path="/driver" element={<Suspense fallback={<PortalLoader />}><DriverDashboard /></Suspense>} />
-            <Route path="/driver/orders" element={<Suspense fallback={<PortalLoader />}><DriverOrders /></Suspense>} />
-            <Route path="/driver/delivery" element={<Suspense fallback={<PortalLoader />}><DriverDelivery /></Suspense>} />
-            <Route path="/driver/earnings" element={<Suspense fallback={<PortalLoader />}><DriverEarnings /></Suspense>} />
-            <Route path="/driver/schedule" element={<Suspense fallback={<PortalLoader />}><DriverSchedule /></Suspense>} />
-            <Route path="/driver/profile" element={<Suspense fallback={<PortalLoader />}><DriverProfile /></Suspense>} />
-          </Route>
+        <Route path="livreur" element={<DriverLayout />}>
+          <Route index element={<DriverDashboard />} />
+          <Route path="courses" element={<DriverOrders />} />
+          <Route path="livraison" element={<DriverDelivery />} />
+          <Route path="gains" element={<DriverEarnings />} />
+          <Route path="planning" element={<DriverSchedule />} />
+          <Route path="profil" element={<DriverProfile />} />
+        </Route>
 
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Suspense fallback={<PortalLoader />}><AdminOverview /></Suspense>} />
-            <Route path="/admin/users" element={<Suspense fallback={<PortalLoader />}><AdminUsers /></Suspense>} />
-            <Route path="/admin/restaurants" element={<Suspense fallback={<PortalLoader />}><AdminRestaurants /></Suspense>} />
-            <Route path="/admin/orders" element={<Suspense fallback={<PortalLoader />}><AdminOrders /></Suspense>} />
-            <Route path="/admin/finance" element={<Suspense fallback={<PortalLoader />}><AdminFinance /></Suspense>} />
-            <Route path="/admin/marketing" element={<Suspense fallback={<PortalLoader />}><AdminMarketing /></Suspense>} />
-            <Route path="/admin/support" element={<Suspense fallback={<PortalLoader />}><AdminSupport /></Suspense>} />
-            <Route path="/admin/settings" element={<Suspense fallback={<PortalLoader />}><AdminSettings /></Suspense>} />
-            <Route path="/admin/prospecting" element={<Suspense fallback={<PortalLoader />}><AdminProspecting /></Suspense>} />
-            <Route path="/admin/cities" element={<Suspense fallback={<PortalLoader />}><AdminCities /></Suspense>} />
-            <Route path="/admin/logs" element={<Suspense fallback={<PortalLoader />}><ErrorLogViewer /></Suspense>} />
-          </Route>
-        </Routes>
-        </ErrorBoundary>
-        <DebugTrigger />
-      </CartProvider>
-    </NotificationProvider>
-    </CityProvider>
-    </LanguageProvider>
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<AdminOverview />} />
+          <Route path="commandes" element={<AdminOrders />} />
+          <Route path="commerces" element={<AdminRestaurants />} />
+          <Route path="utilisateurs" element={<AdminUsers />} />
+          <Route path="villes" element={<AdminCities />} />
+          <Route path="finance" element={<AdminFinance />} />
+          <Route path="marketing" element={<AdminMarketing />} />
+          <Route path="prospection" element={<AdminProspecting />} />
+          <Route path="support" element={<AdminSupport />} />
+          <Route path="parametres" element={<AdminSettings />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
   )
 }

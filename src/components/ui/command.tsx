@@ -50,7 +50,7 @@ const CommandInput = React.forwardRef<
       {...props}
     />
   </div>
-)
+))
 
 CommandInput.displayName = CommandPrimitive.Input.displayName
 
