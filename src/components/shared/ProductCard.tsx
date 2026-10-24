@@ -52,9 +52,9 @@ export default function ProductCard({
         {description && <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{description}</p>}
         {meta && <p className="mt-0.5 text-xs text-muted-foreground">{meta}</p>}
         <div className="mt-auto flex items-end justify-between gap-2 pt-3">
-          <div className="leading-tight">
+          <div className="flex min-w-0 flex-col leading-tight">
             <span className={cn('font-bold', originalPrice ? 'text-brand-600' : 'text-ink')}>{formatPrice(price)}</span>
-            {originalPrice && <span className="ml-1.5 text-xs text-muted-foreground line-through">{formatPrice(originalPrice)}</span>}
+            {originalPrice && <span className="text-xs text-muted-foreground line-through">{formatPrice(originalPrice)}</span>}
           </div>
           {quantity > 0 ? (
             <QuantityStepper value={quantity} onChange={onQuantityChange} size="sm" label={`Quantité de ${name}`} />
@@ -64,7 +64,7 @@ export default function ProductCard({
               onClick={onAdd}
               disabled={disabled}
               aria-label={`Ajouter ${name} au panier`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-white shadow transition-transform hover:scale-105 disabled:opacity-40"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-white shadow transition-transform hover:scale-105 disabled:opacity-40"
             >
               <Plus className="h-4 w-4" />
             </button>
