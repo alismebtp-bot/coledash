@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import PortalLayout, { type PortalConfig } from './PortalLayout'
 
-export const merchantPortal: PortalConfig = {
+const merchantPortal: PortalConfig = {
   title: 'Espace commerçant',
   identity: { name: 'Le Bistrot du Coin', subtitle: 'Paris 2e · Restaurant', initials: 'BC' },
   nav: [
@@ -38,7 +38,7 @@ export const merchantPortal: PortalConfig = {
   ],
 }
 
-export const driverPortal: PortalConfig = {
+const driverPortal: PortalConfig = {
   title: 'Espace livreur',
   identity: { name: 'Karim Benali', subtitle: 'Vélo électrique · Paris', initials: 'KB' },
   nav: [
@@ -51,7 +51,7 @@ export const driverPortal: PortalConfig = {
   ],
 }
 
-export const adminPortal: PortalConfig = {
+const adminPortal: PortalConfig = {
   title: 'Administration',
   identity: { name: 'Équipe Ops', subtitle: 'admin@coledash.fr', initials: 'OP' },
   nav: [

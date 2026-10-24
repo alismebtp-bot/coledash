@@ -7,7 +7,7 @@ import { useCart, selectCount } from '@/store/cart'
 import { useAuth } from '@/store/auth'
 import { cn } from '@/lib/utils'
 
-export const SITE_NAV = [
+const SITE_NAV = [
   { to: '/restaurants', label: 'Restaurants' },
   { to: '/courses', label: 'Courses' },
   { to: '/fleurs', label: 'Fleurs' },
