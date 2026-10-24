@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Order, OrderStatus } from '@/types'
+import { useAuth } from './auth'
 
 interface OrdersState {
   orders: Order[]
-  place: (order: Omit<Order, 'id' | 'number' | 'createdAt'>) => Order
+  place: (order: Omit<Order, 'id' | 'number' | 'createdAt' | 'userId'>) => Order
   cancel: (id: string) => void
   rate: (id: string, rating: number) => void
 }
@@ -19,6 +20,7 @@ export const useOrders = create<OrdersState>()(
           id: `ord-${Date.now().toString(36)}`,
           number: `CD-${Math.floor(10000 + Math.random() * 90000)}`,
           createdAt: new Date().toISOString(),
+          userId: useAuth.getState().user?.id,
         }
         set((s) => ({ orders: [order, ...s.orders] }))
         return order

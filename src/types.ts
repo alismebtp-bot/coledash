@@ -36,6 +36,8 @@ export interface Order {
   /** Short public number, e.g. "CD-48213". */
   number: string
   createdAt: string
+  /** Owner; undefined for guest checkouts. */
+  userId?: string
   vendorId: string
   vendorName: string
   vendorKind: VendorKind
