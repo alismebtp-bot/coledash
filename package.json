@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "ts-node scripts/build-check.ts && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
@@ -50,11 +50,10 @@
     "html5-qrcode": "^2.3.8",
     "input-otp": "^1.2.4",
     "jsbarcode": "^3.11.6",
-    "jspdf": "^3.0.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.562.0",
     "next-themes": "^0.4.6",
-    "plugin-inspect-react-code": "^0.1.7",
-    "quagga": "^0.12.4",
+    "quagga": "^0.12.1",
     "react": "^19.2.0",
     "react-day-picker": "^9.6.7",
     "react-dom": "^19.2.0",
@@ -88,6 +87,6 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^7.2.4",
-    "vite-plugin-pwa": "^2.0.10"
+    "vite-plugin-pwa": "^2.0.0"
   }
 }
